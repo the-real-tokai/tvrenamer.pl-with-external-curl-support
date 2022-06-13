@@ -129,6 +129,7 @@ my $unixy		 = undef; # Disabled
 my $reversible	 = undef; # Disabled
 my $debug		 = undef; # Disabled
 my $ANSIcolour	 = 1;	  # Use colour
+my $usecURL		 = 0;	  # Don't use
 my $cleanup		 = undef; # Disabled
 my $show_missing = 0;	  # 0: Don't show, 1: List missing episodes
 
@@ -241,6 +242,7 @@ Choosing how to interact:
 Maniuplating technical behaviour:
  --cache			Use/create .cache files to save 15min chunks of bandwidth
  --nocache			Do no make or use .cache files, always fetch the URL
+ --usecURL			Utilize external cURL command to make network requests
 
 Windows-specific functionality:
  --associate-with-video-folders
@@ -340,6 +342,7 @@ if($#ARGV ne -1)
 		elsif( $arg =~ /^--noansi$/i )		 {$ANSIcolour = 0;}
 		elsif( $arg =~ /^--reversible$/i )	 {$reversible = 1;}
 		elsif( $arg =~ /^--debug$/i )		 {$debug = 1;}
+		elsif( $arg =~ /^--use-curl$/i )	 {$usecURL = 1;}
 
 		elsif( $arg =~ /^--preproc=(.*)$/i )   {$preproc = $1;}
 		elsif( $arg =~ /^--postproc=(.*)$/i )  {$postproc = $1;}
@@ -662,7 +665,7 @@ else
 			# Peform search on TV.com for programme ("program" to those in the U.S.A.)
 			while($len==0 && $retries > 0){
 				print "Performing search...\n";
-				$page = get($url);
+				$page = ($usecURL ? qx{curl --silent \Q$url\E} : get($url));
 				#$page = Encode::decode 'UTF-8', $page;
 				$len = length($page);
 				$retries--;
@@ -789,7 +792,7 @@ else
 				# Debugging: Show URL being fetched
 				#print $inputFile;
 				#print "\n";
-				if($_ = get($inputFile)){
+				if($_ = ($usecURL ? qx{curl --silent \Q$inputFile\E} : get($inputFile))){
 					my $t;
 					print $ANSIrestore.$ANSInormal."[Done]\n";
 
