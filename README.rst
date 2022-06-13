@@ -1,3 +1,6 @@
+**Info:** This is a fork of ``tvrenamer.pl``. It supports doing network requests via an external cURL command (use parameter ``--use-cURL``)
+
+
 TV Series Renamer v2.x
 ======================
 
